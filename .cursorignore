@@ -1,0 +1,57 @@
+# Cursor AI - Ignore files from AI context
+# This file specifies files/directories to exclude from AI features like autocomplete and code analysis
+
+# Environment and secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+__pycache__/
+*.pyc
+*.pyo
+
+# Test coverage
+htmlcov/
+.coverage
+.pytest_cache/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.bak
