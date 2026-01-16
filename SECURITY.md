@@ -191,5 +191,5 @@ For general issues: <https://github.com/doronpers/shared-ai-utils/issues>
 
 ---
 
-**Last Updated**: January 2026  
+**Last Updated**: January 2026
 **Version**: 0.1.0

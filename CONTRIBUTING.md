@@ -126,17 +126,17 @@ from pydantic import BaseModel
 
 class MyConfig(BaseModel):
     """Configuration for my feature."""
-    
+
     api_key: str
     timeout: Optional[int] = 30
 
 def process_data(config: MyConfig) -> dict:
     """
     Process data using the provided configuration.
-    
+
     Args:
         config: Configuration object
-        
+
     Returns:
         Dictionary with processed results
     """
@@ -180,14 +180,14 @@ async def test_llm_manager_generates_response():
     """Test that LLM manager generates a response."""
     # Arrange
     manager = LLMManager(preferred_provider="anthropic")
-    
+
     # Act
     response = await manager.generate(
         system_prompt="You are helpful",
         user_prompt="Hello",
         max_tokens=10
     )
-    
+
     # Assert
     assert response.text is not None
     assert len(response.text) > 0
