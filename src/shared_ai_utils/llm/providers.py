@@ -533,24 +533,26 @@ class GeminiProvider(LLMProvider):
     ) -> LLMResponse:
         """Generate a completion using Google Gemini."""
         try:
-            import google.generativeai as genai
+            from google import genai
+            from google.genai import types
         except ImportError:
             raise ImportError(
-                "google-generativeai package not installed. Install with: pip install google-generativeai"
+                "google-genai package not installed. Install with: pip install google-genai"
             )
 
         def _call() -> str:
-            genai.configure(api_key=self.api_key)
-            model = genai.GenerativeModel(self.model or self.DEFAULT_MODEL)
+            client = genai.Client(api_key=self.api_key)
             full_prompt = f"{system_prompt}\n\n{user_prompt}"
-            response = model.generate_content(
-                full_prompt,
-                generation_config={
-                    "temperature": temperature,
-                    "max_output_tokens": max_tokens,
-                },
+            response = client.models.generate_content(
+                model=self.model or self.DEFAULT_MODEL,
+                contents=full_prompt,
+                config=types.GenerateContentConfig(
+                    temperature=temperature,
+                    max_output_tokens=max_tokens,
+                ),
             )
-            return response.text
+            # Response can have .text or .parsed depending on format
+            return getattr(response, "text", None) or str(response.parsed) if hasattr(response, "parsed") else str(response)
 
         text = await asyncio.to_thread(_call)
 
@@ -606,7 +608,7 @@ class GeminiProvider(LLMProvider):
         if self.api_key is None:
             return False
         try:
-            import google.generativeai  # noqa: F401
+            from google import genai  # noqa: F401
             return True
         except ImportError:
             return False
