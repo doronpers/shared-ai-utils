@@ -61,6 +61,7 @@ class RuleBuilder:
             # Processes
             "standards/06-ai-assisted-development.md",
             "standards/07-documentation.md",
+            "standards/09-framework-guidelines.md",
             "guides/08-reasoning-logs.md",
         ]
 
