@@ -61,6 +61,7 @@ from shared_ai_utils.llm import (
     get_llm_manager,
 )
 from shared_ai_utils.patterns import PatternManager, PatternMemory
+from shared_ai_utils.insights import InsightsEngine, MetricsAnalyzerProtocol
 
 __all__ = [
     # Version
@@ -116,4 +117,7 @@ __all__ = [
     "Wizard",
     "WizardStep",
     "SetupWizard",
+    # Insights
+    "InsightsEngine",
+    "MetricsAnalyzerProtocol",
 ]
