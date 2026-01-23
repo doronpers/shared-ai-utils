@@ -2,13 +2,19 @@
 Assessment Engine
 
 Evidence-based multi-path assessment with explainable scoring.
+
+Supports multi-scorer orchestration with:
+- HeuristicScorer: Rule-based analysis
+- CouncilAdapter: AI-powered multi-perspective review
+- MicroMotiveScorer: Dark Horse micro-motive tracking
 """
 
 import logging
 import time
 from typing import Any, Dict, List, Optional
 
-from .models import (
+from shared_ai_utils.assessment.helpers import extract_text_content
+from shared_ai_utils.assessment.models import (
     AssessmentInput,
     AssessmentResult,
     Evidence,
@@ -19,6 +25,18 @@ from .models import (
     PathType,
     ScoringMetric,
 )
+from shared_ai_utils.assessment.pattern_checks import (
+    PatternViolation,
+    calculate_pattern_penalty,
+    detect_pattern_violations,
+    violations_to_metadata,
+)
+from shared_ai_utils.assessment.scorers.council_adapter import CouncilAdapter
+from shared_ai_utils.assessment.scorers.heuristic import (
+    HeuristicScorer,
+    HeuristicScorerConfig,
+)
+from shared_ai_utils.assessment.scorers.motive import MicroMotiveScorer
 
 logger = logging.getLogger(__name__)
 
@@ -32,14 +50,25 @@ class AssessmentEngine:
     - Evidence-based scoring with explanations
     - Dark Horse micro-motive tracking
     - Confidence scoring
-    - Hybrid heuristics + ML approach (structured for ML integration)
+    - Multi-scorer orchestration (Heuristic, Council AI, Micro-Motive)
+    - Pattern violation detection and penalty calculation
+
+    Acts as an orchestrator for:
+    - HeuristicScorer: Rule-based analysis
+    - CouncilAdapter: AI-powered multi-perspective review
+    - MicroMotiveScorer: Dark Horse tracking
     """
 
     def __init__(
         self,
-        version: str = "1.0",
+        version: str = "2.0",
         enable_explanations: bool = True,
         multi_path_tracking: bool = True,
+        pattern_checks_enabled: bool = True,
+        dark_horse_enabled: bool = True,
+        council_domain: str = "coding",
+        council_api_key: Optional[str] = None,
+        heuristic_config: Optional[HeuristicScorerConfig] = None,
         logger_instance: Optional[logging.Logger] = None,
     ):
         """Initialize the assessment engine.
@@ -48,20 +77,36 @@ class AssessmentEngine:
             version: Engine version
             enable_explanations: Enable detailed explanations
             multi_path_tracking: Enable multi-path evaluation
+            pattern_checks_enabled: Enable pattern violation detection
+            dark_horse_enabled: Enable Dark Horse micro-motive tracking
+            council_domain: Domain preset for Council AI (default: "coding")
+            council_api_key: Optional API key for Council AI
+            heuristic_config: Optional configuration for heuristic scorer
             logger_instance: Optional logger (uses module logger if None)
         """
         self.version = version
         self.enable_explanations = enable_explanations
         self.multi_path_tracking = multi_path_tracking
+        self.pattern_checks_enabled = pattern_checks_enabled
+        self.dark_horse_enabled = dark_horse_enabled
         self.logger = logger_instance or logger
-        self._ml_model = None  # Lazy-loaded ML model for hybrid scoring
-        self._use_ml = False  # Flag to enable ML when available
+
+        # Initialize Scorers
+        self.heuristic_scorer = HeuristicScorer(heuristic_config or HeuristicScorerConfig())
+        self.council_adapter = CouncilAdapter(council_domain, council_api_key)
+        self.motive_scorer = MicroMotiveScorer()
+
+        # Check for Council AI availability
+        self.council_adapter.load_if_available()
+
+        if not self.dark_horse_enabled:
+            self.logger.info("Dark Horse micro-motive tracking is disabled")
 
         self.logger.info(f"Initialized AssessmentEngine v{self.version}")
 
     async def assess(self, assessment_input: AssessmentInput) -> AssessmentResult:
         """
-        Perform comprehensive assessment.
+        Perform comprehensive assessment with hybrid heuristics + AI approach.
 
         Args:
             assessment_input: Assessment input data
@@ -75,13 +120,28 @@ class AssessmentEngine:
         # Generate unique assessment ID
         assessment_id = f"assess_{int(time.time() * 1000)}"
 
+        # Detect pattern violations if enabled
+        submission_text = extract_text_content(assessment_input.content)
+        pattern_violations: List[PatternViolation] = []
+        pattern_penalty = 0.0
+        pattern_checks_active = (
+            self.pattern_checks_enabled and assessment_input.submission_type == "code"
+        )
+        if pattern_checks_active:
+            pattern_violations = detect_pattern_violations(submission_text)
+            pattern_penalty = calculate_pattern_penalty(
+                pattern_violations,
+                self.heuristic_scorer.pattern_penalty_weights,
+                self.heuristic_scorer.pattern_penalty_max,
+            )
+
         # Evaluate each path
         path_scores = []
         all_motives = []
         all_confidences = []
 
         for path in assessment_input.paths_to_evaluate:
-            path_score = await self._evaluate_path(path, assessment_input)
+            path_score = await self._evaluate_path(path, assessment_input, pattern_violations)
             path_scores.append(path_score)
             all_motives.extend(path_score.motives)
             # Collect confidence from metrics
@@ -123,34 +183,55 @@ class AssessmentEngine:
             engine_version=self.version,
             processing_time_ms=processing_time,
             metadata={
-                "assessment_mode": "hybrid" if self._use_ml else "heuristic",
-                "ml_available": self._use_ml,
+                "assessment_mode": "hybrid_council"
+                if self.council_adapter._available
+                else "heuristic",
+                "council_available": self.council_adapter._available,
+                "pattern_checks": {
+                    "enabled": pattern_checks_active,
+                    "violation_count": len(pattern_violations),
+                    "penalty_points": pattern_penalty,
+                    "violations": violations_to_metadata(pattern_violations),
+                },
             },
         )
 
         self.logger.info(
             f"Assessment completed for {assessment_input.candidate_id}: "
-            f"score={overall_score:.2f}, confidence={overall_confidence:.2%}"
+            f"score={overall_score:.2f}, confidence={overall_confidence:.2%}, "
+            f"mode={'hybrid_council' if self.council_adapter._available else 'heuristic'}, "
+            f"time={processing_time:.2f}ms"
         )
 
         return result
 
     async def _evaluate_path(
-        self, path: PathType, input_data: AssessmentInput
+        self,
+        path: PathType,
+        input_data: AssessmentInput,
+        pattern_violations: Optional[List[PatternViolation]] = None,
     ) -> PathScore:
-        """Evaluate a specific assessment path."""
+        """Evaluate a specific assessment path using multi-scorer orchestration."""
         self.logger.debug(f"Evaluating path: {path}")
 
-        # Generate metrics for this path
-        metrics = self._generate_metrics_for_path(path, input_data)
+        # 1. Heuristic Scoring
+        metrics = self.heuristic_scorer.generate_metrics_for_path(
+            path, input_data, pattern_violations
+        )
 
-        # Identify micro-motives
-        motives = self._identify_micro_motives(path, input_data)
+        # 2. AI/Council Enhancement
+        council_insights = await self.council_adapter.get_insights(input_data.content, path)
+        if council_insights:
+            metrics = self.council_adapter.enhance_metrics(metrics, council_insights, path)
 
-        # Calculate path score
+        # 3. Micro-Motives
+        if self.dark_horse_enabled:
+            motives = self.motive_scorer.identify_micro_motives(path, input_data)
+        else:
+            motives = []
+
+        # 4. Final Path Score Calculation
         path_score = self._calculate_path_score(metrics)
-
-        # Extract insights
         strengths = self._identify_strengths(metrics)
         improvements = self._identify_improvements(metrics)
 
@@ -163,13 +244,12 @@ class AssessmentEngine:
             areas_for_improvement=improvements,
         )
 
+    # Legacy methods kept for backward compatibility but now delegate to scorers
     def _generate_metrics_for_path(
         self, path: PathType, input_data: AssessmentInput
     ) -> List[ScoringMetric]:
-        """Generate scoring metrics for a specific path."""
-        metrics = []
-        content = input_data.content
-        submission_text = self._extract_text_content(content)
+        """Generate scoring metrics for a specific path (delegates to HeuristicScorer)."""
+        return self.heuristic_scorer.generate_metrics_for_path(path, input_data)
 
         if path == PathType.TECHNICAL:
             # Code quality
@@ -306,94 +386,10 @@ class AssessmentEngine:
     def _identify_micro_motives(
         self, path: PathType, input_data: AssessmentInput
     ) -> List[MicroMotive]:
-        """Identify micro-motives using Dark Horse model."""
-        motives = []
-        content = input_data.content
-        submission_text = self._extract_text_content(content)
-        text_lower = submission_text.lower()
-
-        if path == PathType.TECHNICAL:
-            # Mastery motive
-            if any(word in text_lower for word in ["algorithm", "optimize", "efficient"]):
-                motives.append(
-                    MicroMotive(
-                        motive_type=MotiveType.MASTERY,
-                        strength=0.7,
-                        indicators=["Deep technical understanding"],
-                        evidence=self._generate_motive_evidence(submission_text, MotiveType.MASTERY),
-                        path_alignment=path,
-                    )
-                )
-
-            # Quality motive
-            if "test" in text_lower or "error" in text_lower:
-                motives.append(
-                    MicroMotive(
-                        motive_type=MotiveType.QUALITY,
-                        strength=0.6,
-                        indicators=["Quality-focused approach"],
-                        evidence=self._generate_motive_evidence(submission_text, MotiveType.QUALITY),
-                        path_alignment=path,
-                    )
-                )
-
-        elif path == PathType.DESIGN:
-            # Innovation motive
-            if "alternative" in text_lower or "approach" in text_lower:
-                motives.append(
-                    MicroMotive(
-                        motive_type=MotiveType.INNOVATION,
-                        strength=0.6,
-                        indicators=["Explores multiple approaches"],
-                        evidence=self._generate_motive_evidence(submission_text, MotiveType.INNOVATION),
-                        path_alignment=path,
-                    )
-                )
-
-        elif path == PathType.COLLABORATION:
-            # Collaboration motive
-            if "document" in text_lower or "comment" in text_lower:
-                motives.append(
-                    MicroMotive(
-                        motive_type=MotiveType.COLLABORATION,
-                        strength=0.6,
-                        indicators=["Documentation focus"],
-                        evidence=self._generate_motive_evidence(
-                            submission_text, MotiveType.COLLABORATION
-                        ),
-                        path_alignment=path,
-                    )
-                )
-
-        return motives
-
-    def _generate_motive_evidence(self, text: str, motive_type: MotiveType) -> List[Evidence]:
-        """Generate evidence for a micro-motive."""
-        evidence = []
-        text_lower = text.lower()
-
-        if motive_type == MotiveType.MASTERY:
-            if "algorithm" in text_lower or "optimize" in text_lower:
-                evidence.append(
-                    Evidence(
-                        type=EvidenceType.CODE_QUALITY,
-                        description="Technical depth indicators present",
-                        source="content_analysis",
-                        weight=0.6,
-                    )
-                )
-        elif motive_type == MotiveType.QUALITY:
-            if "test" in text_lower or "error" in text_lower:
-                evidence.append(
-                    Evidence(
-                        type=EvidenceType.TESTING,
-                        description="Quality-focused indicators present",
-                        source="content_analysis",
-                        weight=0.6,
-                    )
-                )
-
-        return evidence
+        """Identify micro-motives using Dark Horse model (delegates to MicroMotiveScorer)."""
+        if self.dark_horse_enabled:
+            return self.motive_scorer.identify_micro_motives(path, input_data)
+        return []
 
     def _calculate_path_score(self, metrics: List[ScoringMetric]) -> float:
         """Calculate weighted average score for a path."""
@@ -474,26 +470,10 @@ class AssessmentEngine:
                 )
         return recommendations
 
-    # Content Analysis Helper Methods
-
+    # Content Analysis Helper Methods (kept for backward compatibility)
     def _extract_text_content(self, content: Dict[str, Any]) -> str:
-        """Extract text content from submission."""
-        text_parts = []
-
-        # Try common content keys
-        for key in ["code", "text", "content", "solution", "submission"]:
-            if key in content:
-                value = content[key]
-                if isinstance(value, str):
-                    text_parts.append(value)
-                elif isinstance(value, list):
-                    text_parts.extend(str(v) for v in value)
-
-        # If no specific key, convert entire content to string
-        if not text_parts:
-            text_parts.append(str(content))
-
-        return "\n".join(text_parts)
+        """Extract text content from submission (delegates to helper)."""
+        return extract_text_content(content)
 
     def _analyze_code_quality(self, text: str) -> float:
         """Analyze code quality using heuristics."""

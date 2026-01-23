@@ -1,0 +1,107 @@
+#!/usr/bin/env python3
+"""
+Unified Entry Point for Sonotheia Ecosystem
+
+Provides a single entry point that routes to appropriate CLI tools.
+"""
+
+import sys
+from pathlib import Path
+
+# Add src to path
+src_path = Path(__file__).parent.parent / "src"
+sys.path.insert(0, str(src_path))
+
+
+def show_help():
+    """Show help message."""
+    help_text = """
+[bold cyan]Sonotheia Ecosystem - Unified CLI[/bold cyan]
+
+[bold]Available Commands:[/bold]
+
+  [cyan]onboard[/cyan]          Unified onboarding for all repositories
+  [cyan]help[/cyan]             Show this help message
+
+[bold]Repository-Specific Commands:[/bold]
+
+  [cyan]sono-eval[/cyan]        Code assessment and evaluation
+  [cyan]feedback-loop[/cyan]     Pattern learning and code quality
+  [cyan]council[/cyan]           AI advisory and decision-making
+  [cyan]sono-platform[/cyan]     Voice authentication platform
+
+[bold]Examples:[/bold]
+
+  sono onboard                    # Start unified onboarding
+  sono onboard --repo sono-eval    # Setup specific repository
+  sono-eval assess run --help     # Use repository-specific CLI
+    """
+    from rich.console import Console
+    console = Console()
+    console.print(help_text)
+
+
+def main():
+    """Main entry point."""
+    if len(sys.argv) < 2:
+        show_help()
+        return 0
+
+    command = sys.argv[1]
+
+    if command == "onboard":
+        # Use shared-ai-utils onboarding
+        try:
+            from shared_ai_utils.cli.onboarding import onboard
+            sys.argv = ["shared-ai-utils", "onboard"] + sys.argv[2:]
+            return onboard()
+        except ImportError:
+            print("Error: shared-ai-utils not installed")
+            print("Install with: pip install shared-ai-utils")
+            return 1
+
+    elif command == "help" or command == "--help" or command == "-h":
+        show_help()
+        return 0
+
+    elif command in ["eval", "sono-eval"]:
+        # Route to sono-eval CLI
+        try:
+            import subprocess
+            result = subprocess.run(["sono-eval"] + sys.argv[2:])
+            return result.returncode
+        except FileNotFoundError:
+            print("Error: sono-eval CLI not found")
+            print("Install sono-eval or add it to your PATH")
+            return 1
+
+    elif command in ["patterns", "feedback-loop", "fl"]:
+        # Route to feedback-loop CLI
+        try:
+            import subprocess
+            result = subprocess.run(["feedback-loop"] + sys.argv[2:])
+            return result.returncode
+        except FileNotFoundError:
+            print("Error: feedback-loop CLI not found")
+            print("Install feedback-loop or add it to your PATH")
+            return 1
+
+    elif command in ["council", "council-ai"]:
+        # Route to council-ai CLI
+        try:
+            import subprocess
+            result = subprocess.run(["council"] + sys.argv[2:])
+            return result.returncode
+        except FileNotFoundError:
+            print("Error: council CLI not found")
+            print("Install council-ai or add it to your PATH")
+            return 1
+
+    else:
+        print(f"Unknown command: {command}")
+        print("\nUse 'sono help' to see available commands")
+        return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

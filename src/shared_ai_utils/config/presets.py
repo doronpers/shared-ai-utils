@@ -65,6 +65,30 @@ STANDARD_PRESETS = {
         "API_WORKERS": 2,
         "API_PORT": 8000,
     },
+    # Domain-specific presets
+    "sono_platform_sensor": {
+        "APP_ENV": "development",
+        "DEBUG": False,
+        "LOG_LEVEL": "INFO",
+        "PATTERN_CHECKS_ENABLED": True,
+        "ASSESSMENT_ENABLED": True,
+        "COUNCIL_DOMAIN": "sonotheia",
+    },
+    "sono_eval_assessment": {
+        "APP_ENV": "development",
+        "DEBUG": False,
+        "LOG_LEVEL": "INFO",
+        "DARK_HORSE_MODE": "enabled",
+        "PATTERN_CHECKS_ENABLED": True,
+        "ASSESSMENT_ENABLE_EXPLANATIONS": True,
+    },
+    "feedback_loop_patterns": {
+        "APP_ENV": "development",
+        "DEBUG": False,
+        "LOG_LEVEL": "INFO",
+        "PATTERN_LIBRARY_PATH": "patterns.json",
+        "MEMORY_ENABLED": False,
+    },
 }
 
 PRESET_DESCRIPTIONS = {
@@ -76,6 +100,9 @@ PRESET_DESCRIPTIONS = {
     "high_performance": "Maximum performance (more workers, aggressive caching)",
     "low_resource": "Minimal resource usage (single worker, no ML models)",
     "ml_development": "ML model development and training (ML features enabled)",
+    "sono_platform_sensor": "Sono-platform sensor development preset (pattern checks, assessment enabled)",
+    "sono_eval_assessment": "Sono-eval assessment preset (Dark Horse mode, pattern checks, explanations)",
+    "feedback_loop_patterns": "Feedback-loop pattern library preset (pattern management enabled)",
 }
 
 

@@ -4,8 +4,11 @@ CLI Framework
 Rich terminal utilities and interactive wizards for command-line interfaces.
 """
 
-from .base import BaseCLI
-from .rich_utils import (
+from shared_ai_utils.cli.base import BaseCLI
+from shared_ai_utils.cli.docs import docs
+from shared_ai_utils.cli.extensions import AssessmentCLI, PatternCLI, SensorCLI
+from shared_ai_utils.cli.onboarding import onboard
+from shared_ai_utils.cli.rich_utils import (
     format_score,
     print_error,
     print_info,
@@ -14,10 +17,15 @@ from .rich_utils import (
     print_table,
     print_warning,
 )
-from .wizards import SetupWizard, Wizard, WizardStep
+from shared_ai_utils.cli.wizards import SetupWizard, Wizard, WizardStep
 
 __all__ = [
     "BaseCLI",
+    "AssessmentCLI",
+    "SensorCLI",
+    "PatternCLI",
+    "onboard",
+    "docs",
     "print_table",
     "print_success",
     "print_error",

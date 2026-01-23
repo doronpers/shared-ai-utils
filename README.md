@@ -2,6 +2,33 @@
 
 Shared utilities for AI-assisted development tools. This package provides reusable components extracted and consolidated from multiple repositories to eliminate duplication and ensure consistency across projects.
 
+## 🆕 New Features (January 2026)
+
+### 🚀 Unified Onboarding System
+Interactive onboarding that helps users find the right tool and guides setup:
+- Intent detection questionnaire
+- Repository-specific setup wizards
+- Setup verification and progress tracking
+- **CLI:** `shared-ai-utils onboard` or `sono onboard`
+
+### 🔧 Error Recovery Framework
+Automatic recovery steps for common errors:
+- 10+ error patterns with actionable recovery steps
+- Contextual help system
+- Unified error formatting (CLI/API/Web)
+- **Integrated into:** sono-eval, feedback-loop
+
+### 📚 Documentation Hub
+Unified documentation search across all repositories:
+- Cross-repo documentation indexing
+- Context-aware documentation loading
+- Relevance-based search ranking
+- **CLI:** `shared-ai-utils docs "query"`
+
+See `UX_IMPLEMENTATION_SUMMARY.md` for complete details.
+
+---
+
 ## Installation
 
 ```bash
