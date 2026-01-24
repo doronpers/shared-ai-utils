@@ -15,8 +15,6 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from shared_ai_utils.cli import print_success, print_error, print_warning
-
 
 @dataclass
 class VerificationCheck:

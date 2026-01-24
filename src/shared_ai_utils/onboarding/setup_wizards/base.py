@@ -11,7 +11,11 @@ from typing import Dict, List, Optional
 
 from rich.console import Console
 
-from shared_ai_utils.cli import print_info, print_success, print_warning
+# Lazy import to avoid circular dependency
+def _get_cli_functions():
+    """Get CLI functions (lazy import to avoid circular dependency)."""
+    from shared_ai_utils.cli.rich_utils import print_info, print_success, print_warning
+    return print_info, print_success, print_warning
 
 
 @dataclass
@@ -82,6 +86,7 @@ class BaseSetupWizard(ABC):
 
             try:
                 success = await self._execute_step(step, repo_path)
+                _, print_success, print_warning = _get_cli_functions()
                 if success:
                     step.completed = True
                     completed_steps.append(step.name)
@@ -96,6 +101,7 @@ class BaseSetupWizard(ABC):
                     else:
                         print_warning(f"⚠ {step.name} skipped (optional)")
             except Exception as e:
+                _, _, print_warning = _get_cli_functions()
                 step.error = str(e)
                 if step.required:
                     failed_steps.append(step.name)

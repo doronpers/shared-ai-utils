@@ -13,7 +13,6 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Confirm, Prompt
 
-from shared_ai_utils.cli import print_info, print_success, print_warning
 from shared_ai_utils.onboarding.intent_detector import IntentDetector, IntentResult
 from shared_ai_utils.onboarding.setup_wizards.base import BaseSetupWizard, get_wizard_for_repo
 from shared_ai_utils.onboarding.verification import SetupVerifier, VerificationResult

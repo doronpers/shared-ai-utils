@@ -7,7 +7,7 @@ Rich terminal utilities and interactive wizards for command-line interfaces.
 from shared_ai_utils.cli.base import BaseCLI
 from shared_ai_utils.cli.docs import docs
 from shared_ai_utils.cli.extensions import AssessmentCLI, PatternCLI, SensorCLI
-from shared_ai_utils.cli.onboarding import onboard
+# Note: onboard imported lazily below to avoid circular dependency
 from shared_ai_utils.cli.rich_utils import (
     format_score,
     print_error,
@@ -18,6 +18,16 @@ from shared_ai_utils.cli.rich_utils import (
     print_warning,
 )
 from shared_ai_utils.cli.wizards import SetupWizard, Wizard, WizardStep
+
+# Lazy import to avoid circular dependency: cli -> onboarding -> cli
+def _get_onboard():
+    """Lazy import of onboard to avoid circular dependency."""
+    from shared_ai_utils.cli.onboarding import onboard as _onboard
+    return _onboard
+
+def onboard(*args, **kwargs):
+    """Onboard function - lazy import wrapper to avoid circular dependency."""
+    return _get_onboard()(*args, **kwargs)
 
 __all__ = [
     "BaseCLI",

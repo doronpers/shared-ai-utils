@@ -12,8 +12,6 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
 
-from shared_ai_utils.cli import print_table, print_info
-
 
 @dataclass
 class IntentResult:
