@@ -1,13 +1,38 @@
 # Shared AI Utils - Roadmap & TODOs
 
-**Last Updated**: 2026-01-16
+**Last Updated**: 2026-01-24 (Updated with completed documentation tasks)
 **Single Source of Truth**: This file contains all TODOs, planned features, and roadmap items.
 
 ---
 
 ## ✅ Recently Completed
 
-*No completed items to report yet.*
+### UX Enhancements (January 2026)
+
+1. ✅ **Unified Onboarding System** - Interactive onboarding with intent detection, repository-specific setup wizards, and progress tracking
+   - **CLI Command**: `shared-ai-utils onboard`
+   - **Components**: Intent detector, setup wizards, verification system
+   - **Status**: Complete and ready for integration
+   - **Completed**: 2026-01-24
+
+2. ✅ **Error Recovery Framework** - Automatic recovery steps for common errors with contextual help
+   - **Features**: 10+ error patterns, actionable recovery steps, unified error formatting
+   - **Integrated into**: sono-eval, feedback-loop
+   - **Status**: Complete
+   - **Completed**: 2026-01-24
+
+3. ✅ **Documentation Hub** - Unified documentation search across all repositories
+   - **Features**: Cross-repo documentation indexing, context-aware loading, relevance-based search
+   - **CLI Command**: `shared-ai-utils docs "query"`
+   - **Status**: Complete
+   - **Completed**: 2026-01-24
+
+### Integration & Adoption
+
+4. ✅ **Council-AI Integration** - Council-AI has successfully migrated to use `shared_ai_utils.llm.LLMManager` and `shared_ai_utils.config.ConfigManager`
+   - **Status**: Complete (verified in council-ai codebase)
+   - **Completed**: 2026-01-16
+   - **Reference**: Council-AI roadmap shows integration as completed
 
 ---
 
@@ -21,15 +46,7 @@
 
 ### Integration & Adoption
 
-#### 1. Council-AI Integration
-- **Status**: 📝 TODO
-- **Complexity**: Medium
-- **Recommended Models**: 1. GPT-5.1-Codex, 2. Claude Sonnet 4.5, 3. Gemini 3 Pro
-- **Description**: Council-AI should migrate to use `shared_ai_utils.llm.LLMManager` and `shared_ai_utils.config.ConfigManager`
-- **Reference**: `council-ai/planning/integration-plan.md`
-- **Dependencies**: Council-AI migration completion
-
-#### 2. Feedback-Loop Integration
+#### 1. Feedback-Loop Integration
 - **Status**: 📝 TODO
 - **Complexity**: Medium
 - **Recommended Models**: 1. GPT-5.1-Codex, 2. Claude Sonnet 4.5, 3. Gemini 3 Pro
@@ -44,16 +61,18 @@
 ### Documentation
 
 #### 3. Enhanced API Documentation
-- **Status**: 📝 TODO
+- **Status**: ✅ Completed (2026-01-24)
 - **Complexity**: Low
-- **Recommended Models**: 1. Claude Sonnet 4.5, 2. GPT-5.1, 3. Gemini 3 Flash
-- **Description**: Expand API reference documentation with more examples
+- **Description**: Created comprehensive API_REFERENCE.md with detailed examples for all major components
+- **Files**: `API_REFERENCE.md`
+- **Components**: LLM, Config, Assessment, FastAPI, Patterns, Error Handling, CLI examples
 
 #### 4. Migration Guides
-- **Status**: 📝 TODO
+- **Status**: ✅ Completed (2026-01-24)
 - **Complexity**: Low-Medium
-- **Recommended Models**: 1. Claude Sonnet 4.5, 2. GPT-5.1, 3. Gemini 3 Flash
-- **Description**: Create migration guides for repositories adopting shared-ai-utils
+- **Description**: Created MIGRATION_GUIDE.md with step-by-step instructions based on council-ai migration experience
+- **Files**: `MIGRATION_GUIDE.md`
+- **Contents**: LLM migration, Config migration, Pattern migration, common issues, testing guide
 
 ### Testing
 
@@ -87,10 +106,10 @@
 
 ## 📊 Progress Summary
 
-- **Completed**: 0 items
+- **Completed**: 6 items
 - **High Priority**: 0 items
-- **Medium Priority**: 2 items
-- **Low Priority**: 5 items
+- **Medium Priority**: 1 items
+- **Low Priority**: 3 items
 
 ---
 

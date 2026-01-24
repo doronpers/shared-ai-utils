@@ -264,47 +264,12 @@ wizard.add_step("debug", "Enable debug mode?", input_type="boolean")
 results = wizard.run()
 ```
 
-## API Reference
+## Documentation
 
-### LLM Module
+- **[API Reference](API_REFERENCE.md)** - Comprehensive API documentation with detailed examples for all components
+- **[Migration Guide](MIGRATION_GUIDE.md)** - Step-by-step guide for adopting shared-ai-utils in your repository
 
-- `LLMProvider` - Abstract base class for LLM providers
-- `LLMManager` - Manager with fallback logic
-- `LLMResponse` - Response dataclass with token tracking
-- `AnthropicProvider`, `OpenAIProvider`, `GeminiProvider`, `HTTPProvider` - Concrete providers
-
-### Config Module
-
-- `ConfigBase` - Base class for Pydantic-based configuration
-- `ConfigManager` - YAML config file manager
-- `PresetManager` - Preset management system
-
-### Assessment Module
-
-- `AssessmentEngine` - Main assessment engine
-- `AssessmentInput` - Input model
-- `AssessmentResult` - Result model with scores and explanations
-- `Evidence`, `MicroMotive`, `PathScore` - Supporting models
-
-### API Module
-
-- `RequestIDMiddleware` - FastAPI middleware for request IDs
-- `create_cors_middleware()` - CORS configuration factory
-- `create_health_router()` - Health check router factory
-- `ErrorCode` - Standard error codes enum
-- `ErrorResponse` - Standardized error response model
-- `create_error_response()` - Error response factory
-
-### Patterns Module
-
-- `PatternManager` - Pattern library manager
-- `PatternMemory` - MemU integration for semantic search
-
-### CLI Module
-
-- `BaseCLI` - Base class for Click-based CLIs
-- `print_table()`, `print_success()`, `print_error()` - Rich output utilities
-- `Wizard`, `SetupWizard` - Interactive wizard framework
+For quick reference, see the component examples in the [Components](#components) section above.
 
 ## Testing
 
