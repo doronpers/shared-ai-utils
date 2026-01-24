@@ -3,7 +3,7 @@
 import hashlib
 import hmac
 import logging
-from typing import Optional
+from typing import Callable, Optional
 
 from fastapi import HTTPException, Request, Security, status
 from fastapi.security import APIKeyHeader, HTTPBearer

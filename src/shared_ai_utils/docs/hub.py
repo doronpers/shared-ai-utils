@@ -7,7 +7,7 @@ Main hub for unified documentation across all repositories.
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
 @dataclass
