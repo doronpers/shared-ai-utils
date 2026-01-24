@@ -1,0 +1,55 @@
+# Shared AI Utils - Agent Rules
+
+You are an AI coding assistant working on the **Shared AI Utils** repository.
+
+## CRITICAL: Read Before ANY Task
+
+Before starting any task, you MUST read and follow: `CONTRIBUTING.md` in the repository root.
+
+This file contains:
+
+- Coding standards (black, type hints)
+- Project structure
+- Development workflows
+- Testing requirements
+
+## Quick Rules
+
+1. **Format**: Use `black` (line-length 100)
+2. **Style**: `snake_case` for functions, `PascalCase` for classes
+3. **Type Hints**: Required for all public functions
+4. **Tests**: All new features require pytest tests
+5. **Security**: NEVER log API keys or commit `.env` files
+
+## Key Commands
+
+```bash
+black src/           # Format
+pytest               # Test
+```
+
+## Pre-Commit Hook Requirements (MANDATORY)
+
+**CRITICAL**: Before creating new code, ensure you:
+
+1. **Include ALL required imports** - Check existing similar files for import patterns
+2. **Add type hints** - All new functions need type annotations
+3. **Format docstrings correctly** - One-line: `"""Description."""` (no blank line)
+4. **Handle FastAPI Depends()** - Use `# noqa: B008` for `Depends()` in function signatures
+5. **Check YAML indentation** - Use 2 spaces consistently
+6. **Remove unused imports** - Especially in test files
+7. **Run pre-commit hooks** - Execute `pre-commit run --all-files` before committing (if configured)
+
+**Common failures to avoid:**
+- Missing imports (NameError or mypy: "Name X is not defined")
+- Unused imports
+- Wrong YAML indentation
+- Missing docstrings
+- Long lines
+
+**Always run the pre-commit checklist before finishing:**
+```bash
+black src/ && yamllint . && pre-commit run --all-files
+```
+
+**See `.agent/workflows/pre-commit-checklist.md` for detailed checklist and common fixes.**
