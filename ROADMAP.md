@@ -23,15 +23,19 @@
 
 #### 1. Council-AI Integration
 - **Status**: 📝 TODO
+- **Complexity**: Medium
+- **Recommended Models**: 1. GPT-5.1-Codex, 2. Claude Sonnet 4.5, 3. Gemini 3 Pro
 - **Description**: Council-AI should migrate to use `shared_ai_utils.llm.LLMManager` and `shared_ai_utils.config.ConfigManager`
 - **Reference**: `council-ai/planning/integration-plan.md`
-- **Estimated Effort**: Dependent on council-ai migration
+- **Dependencies**: Council-AI migration completion
 
 #### 2. Feedback-Loop Integration
 - **Status**: 📝 TODO
+- **Complexity**: Medium
+- **Recommended Models**: 1. GPT-5.1-Codex, 2. Claude Sonnet 4.5, 3. Gemini 3 Pro
 - **Description**: Feedback-loop should migrate to use `LLMManager` and `shared_ai_utils.patterns.PatternManager`
 - **Reference**: `council-ai/planning/integration-plan.md`
-- **Estimated Effort**: Dependent on feedback-loop migration
+- **Dependencies**: Feedback-loop migration completion
 
 ---
 
@@ -41,32 +45,33 @@
 
 #### 3. Enhanced API Documentation
 - **Status**: 📝 TODO
+- **Complexity**: Low
+- **Recommended Models**: 1. Claude Sonnet 4.5, 2. GPT-5.1, 3. Gemini 3 Flash
 - **Description**: Expand API reference documentation with more examples
-- **Estimated Effort**: 2-3 hours
 
 #### 4. Migration Guides
 - **Status**: 📝 TODO
+- **Complexity**: Low-Medium
+- **Recommended Models**: 1. Claude Sonnet 4.5, 2. GPT-5.1, 3. Gemini 3 Flash
 - **Description**: Create migration guides for repositories adopting shared-ai-utils
-- **Estimated Effort**: 1-2 days
 
 ### Testing
 
 #### 5. Integration Test Suite
 - **Status**: 📝 TODO
 - **Description**: Add comprehensive integration tests for cross-module functionality
-- **Estimated Effort**: 2-3 days
 
 ### Features
 
 #### 6. Additional LLM Providers
 - **Status**: 📝 TODO
+- **Complexity**: Medium (per provider)
+- **Recommended Models**: 1. GPT-5.1-Codex, 2. Claude Sonnet 4.5, 3. Gemini 3 Pro
 - **Description**: Add support for additional LLM providers (e.g., Cohere, Mistral)
-- **Estimated Effort**: 1-2 days per provider
 
 #### 7. Enhanced Pattern Search
 - **Status**: 📝 TODO
 - **Description**: Improve semantic search capabilities for pattern library
-- **Estimated Effort**: 2-3 days
 
 ---
 
@@ -101,6 +106,6 @@
 
 1. When starting work on a TODO, change status from `📝 TODO` to `🚧 In Progress`
 2. When completing, move to "Recently Completed" section and mark as `✅`
-3. Add new TODOs with appropriate priority and estimated effort
+3. Add new TODOs with complexity indicators (Low, Medium, High) rather than time estimates
 4. Update "Last Updated" date
 5. Keep items organized by priority and category
