@@ -30,7 +30,10 @@ class UnifiedOnboarding:
         self.console = console or Console()
         self.intent_detector = IntentDetector(console=self.console)
         self.verifier = SetupVerifier(console=self.console)
-        self.progress_file = Path.home() / ".sonotheia" / "onboarding_progress.json"
+        # Use workspace-relative path
+        from ..utils.paths import get_workspace_config_dir
+
+        self.progress_file = get_workspace_config_dir("shared-ai-utils") / "onboarding" / "onboarding_progress.json"
         self.progress_file.parent.mkdir(parents=True, exist_ok=True)
 
     async def run(

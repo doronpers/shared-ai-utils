@@ -16,9 +16,12 @@ try:
     from dotenv import load_dotenv
 
     # Try multiple common locations
+    from ..utils.paths import get_workspace_config_dir
+
     env_paths_to_try = [
         Path.cwd() / ".env",  # Current working directory
-        Path.home() / ".shared-ai-utils" / ".env",  # User home directory
+        get_workspace_config_dir("shared-ai-utils") / ".env",  # Workspace config
+        Path.home() / ".shared-ai-utils" / ".env",  # Legacy fallback
     ]
 
     for env_path in env_paths_to_try:

@@ -29,9 +29,13 @@ class ConfigManager:
         if config_path:
             self.path = Path(config_path)
         else:
+            # Import here to avoid circular dependency
+            from ..utils.paths import get_workspace_config_dir
+
             options = [
                 os.environ.get(f"{app_name.upper().replace('-', '_')}_CONFIG_DIR"),
-                Path.home() / ".config" / app_name,
+                get_workspace_config_dir(app_name),
+                Path.home() / ".config" / app_name,  # Legacy fallback
                 Path("/tmp") / app_name,
             ]
 
