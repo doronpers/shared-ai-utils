@@ -104,7 +104,7 @@ class TestConfigManager:
             config_file.write_text("API_KEY: test-key\nDEBUG: true\n")
 
             manager = ConfigManager(config_path=str(config_file))
-            config = manager.load(TestConfig)
+            config = manager.load(TestConfigClass)
 
             # Config loads from YAML, but field names use aliases
             assert config.api_key == "test-key" or config.get("api_key") == "test-key"
